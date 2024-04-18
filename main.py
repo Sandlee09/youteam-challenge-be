@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Set up the database connection
-engine = create_engine("postgresql://postgres:admin@localhost/TurnTable")
+engine = create_engine("postgresql://postgres:Gabriel09@localhost/TurnTable")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
@@ -139,7 +139,15 @@ def get_all_relationships(table_name: str, db=Depends(get_db)):
     query = text("SELECT * FROM column_relationships WHERE source ILIKE :source")
     result = session.execute(query, {"source": "%"+lowercase_tablename+"%"})
     rows = result.fetchall()
-    first_relationship_data = [dict(row) for row in rows]
+    first_relationship_data = []
+    for row in rows:
+        dictionary_row = {
+            "id": row[0],
+            "source": row[1],
+            "target": row[2],
+            "join_type": row[3]
+        }
+        first_relationship_data.append(dictionary_row)
 
 
     # Extract table names from the source column of each row
